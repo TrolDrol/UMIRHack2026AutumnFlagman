@@ -1,0 +1,12 @@
+**
+!supplier_frontend
+!supplier_frontend/**
+!packages
+!packages/**
+**/node_modules
+**/dist
+**/dist-demo
+**/test-results
+**/playwright-report
+**/.env.local
+**/.npm-cache

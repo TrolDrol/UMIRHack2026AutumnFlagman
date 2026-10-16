@@ -1,0 +1,9 @@
+# Merge after compose.live.yml. TLS terminates on trusted host nginx -> loopback gateway.
+# All images must be built and tagged beforehand. No automatic seed/bootstrap.
+services:
+  backend:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+  migrate:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging

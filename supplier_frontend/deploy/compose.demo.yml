@@ -1,0 +1,10 @@
+services:
+  supplier-web:
+    build:
+      context: ../..
+      dockerfile: supplier_frontend/Dockerfile
+      args:
+        VITE_DEMO_MODE: "true"
+    ports:
+      - "5185:80"
+    restart: unless-stopped

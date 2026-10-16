@@ -1,0 +1,178 @@
+.section {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+.section > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  background: #f7f9f4;
+  font-weight: 600;
+  list-style: none;
+}
+.section > summary::-webkit-details-marker {
+  display: none;
+}
+.count {
+  background: #e6eddf;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+.chevron {
+  margin-left: auto;
+  font-size: 1.4rem;
+  transition: transform 0.15s;
+}
+.section[open] .chevron {
+  transform: rotate(180deg);
+}
+.sectionBody {
+  padding: 16px;
+}
+.dishList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 12px;
+  max-height: 460px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 4px;
+}
+.dishCard {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+.dishCard strong {
+  overflow-wrap: anywhere;
+}
+.dishCard p {
+  margin: 0;
+}
+.dishCard button {
+  margin-top: auto;
+}
+.hotBadge {
+  background: #e9f3d5;
+  color: #3c5b1f;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.pagination > div {
+  display: flex;
+  gap: 8px;
+}
+.pagination button {
+  padding: 0;
+}
+.cartGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 320px));
+  gap: 16px;
+  margin: 20px 0;
+}
+.cartCard {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  background: linear-gradient(145deg, #fcfef9, #f2f6ec);
+  box-shadow: 0 3px 10px #18382d08;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+.cartHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cartHeader strong {
+  padding-top: 10px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  background: white;
+}
+
+.deleteButton {
+  color: var(--danger);
+  border-color: #e7cac6;
+}
+.deleteButton:hover {
+  background: #fff0ed;
+}
+.quantity {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 76px;
+  align-items: start;
+  gap: 8px;
+}
+.quantity .iconButton {
+  font-size: 1.4rem;
+}
+.quantity > span {
+  margin-top: 24px;
+}
+.quantity input {
+  text-align: center;
+  font-weight: 600;
+  appearance: textfield;
+}
+.quantity input::-webkit-inner-spin-button,
+.quantity input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.quantity label {
+  text-align: center;
+}
+.confirmText {
+  line-height: 1.6;
+}
+@media (max-width: 620px) {
+  .section > summary {
+    padding: 14px;
+  }
+  .sectionBody {
+    padding: 10px;
+  }
+  .dishList {
+    max-height: 400px;
+  }
+  .cartGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,4813 @@
+{
+  "Unit": {
+    "anyOf": [
+      {
+        "type": "string",
+        "const": "g"
+      },
+      {
+        "type": "string",
+        "const": "ml"
+      },
+      {
+        "type": "string",
+        "const": "pcs"
+      }
+    ]
+  },
+  "Meta": {
+    "type": "object",
+    "properties": {
+      "serverTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "requestId": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "required": [
+      "serverTime",
+      "requestId"
+    ],
+    "additionalProperties": false
+  },
+  "User": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "username": {
+        "type": "string"
+      },
+      "displayName": {
+        "type": "string"
+      },
+      "isSuperAdmin": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "id",
+      "username",
+      "displayName"
+    ],
+    "additionalProperties": false
+  },
+  "Role": {
+    "anyOf": [
+      {
+        "type": "string",
+        "const": "super_admin"
+      },
+      {
+        "type": "string",
+        "const": "owner"
+      },
+      {
+        "type": "string",
+        "const": "manager"
+      },
+      {
+        "type": "string",
+        "const": "warehouse"
+      },
+      {
+        "type": "string",
+        "const": "waiter"
+      }
+    ]
+  },
+  "Enterprise": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "name": {
+        "type": "string"
+      },
+      "warehouseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "warehouseId",
+      "createdAt"
+    ],
+    "additionalProperties": false
+  },
+  "Membership": {
+    "type": "object",
+    "properties": {
+      "enterpriseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "enterpriseName": {
+        "type": "string"
+      },
+      "warehouseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "role": {
+        "$ref": "#/components/schemas/Role"
+      }
+    },
+    "required": [
+      "enterpriseId",
+      "enterpriseName",
+      "warehouseId",
+      "role"
+    ],
+    "additionalProperties": false
+  },
+  "Member": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "username": {
+        "type": "string"
+      },
+      "displayName": {
+        "type": "string"
+      },
+      "role": {
+        "$ref": "#/components/schemas/Role"
+      }
+    },
+    "required": [
+      "userId",
+      "username",
+      "displayName",
+      "role"
+    ],
+    "additionalProperties": false
+  },
+  "StaffAccount": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "username": {
+        "type": "string"
+      },
+      "displayName": {
+        "type": "string"
+      },
+      "isSuperAdmin": {
+        "type": "boolean"
+      },
+      "canDeleteAccount": {
+        "type": "boolean"
+      },
+      "memberships": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "enterpriseId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "enterpriseName": {
+              "type": "string"
+            },
+            "role": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "required": [
+            "enterpriseId",
+            "enterpriseName",
+            "role"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "userId",
+      "username",
+      "displayName",
+      "isSuperAdmin",
+      "canDeleteAccount",
+      "memberships"
+    ],
+    "additionalProperties": false
+  },
+  "Config": {
+    "type": "object",
+    "properties": {
+      "restaurantName": {
+        "type": "string"
+      },
+      "timeZone": {
+        "type": "string",
+        "const": "Europe/Moscow"
+      },
+      "expiryWarningPercent": {
+        "type": "number",
+        "const": 10
+      },
+      "hotOfferMaxPortions": {
+        "type": "number",
+        "const": 20
+      },
+      "contractVersion": {
+        "type": "string",
+        "const": "2.1.0"
+      }
+    },
+    "required": [
+      "restaurantName",
+      "timeZone",
+      "expiryWarningPercent",
+      "hotOfferMaxPortions",
+      "contractVersion"
+    ],
+    "additionalProperties": false
+  },
+  "Ingredient": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "name": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "defaultShelfLifeHours": {
+        "type": "number"
+      },
+      "reorderPoint": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "targetStock": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "unit",
+      "defaultShelfLifeHours",
+      "reorderPoint",
+      "targetStock"
+    ],
+    "additionalProperties": false
+  },
+  "IngredientInput": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "defaultShelfLifeHours": {
+        "type": "number"
+      },
+      "reorderPoint": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "targetStock": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      }
+    },
+    "required": [
+      "name",
+      "unit",
+      "defaultShelfLifeHours",
+      "reorderPoint",
+      "targetStock"
+    ],
+    "additionalProperties": false
+  },
+  "IngredientPatch": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "defaultShelfLifeHours": {
+        "type": "number"
+      },
+      "reorderPoint": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "targetStock": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "RecipeLine": {
+    "type": "object",
+    "properties": {
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      }
+    },
+    "required": [
+      "ingredientId",
+      "quantity"
+    ],
+    "additionalProperties": false
+  },
+  "Dish": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "name": {
+        "type": "string"
+      },
+      "active": {
+        "type": "boolean"
+      },
+      "recipe": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RecipeLine"
+        }
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "active",
+      "recipe",
+      "createdAt",
+      "updatedAt"
+    ],
+    "additionalProperties": false
+  },
+  "DishInput": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "active": {
+        "type": "boolean"
+      },
+      "recipe": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RecipeLine"
+        }
+      }
+    },
+    "required": [
+      "name",
+      "active",
+      "recipe"
+    ],
+    "additionalProperties": false
+  },
+  "DeliveryLineInput": {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "ingredientId",
+          "quantity",
+          "expiresAt"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          "manufacturedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shelfLifeHours": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "ingredientId",
+          "quantity",
+          "manufacturedAt"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  },
+  "DeliveryInput": {
+    "type": "object",
+    "properties": {
+      "number": {
+        "type": "string"
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DeliveryLineInput"
+        }
+      }
+    },
+    "required": [
+      "number",
+      "expectedAt",
+      "note",
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "DeliveryItem": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "manufacturedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "shelfLifeHours": {
+        "type": "number"
+      },
+      "expiresAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "id",
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "quantity",
+      "manufacturedAt",
+      "shelfLifeHours",
+      "expiresAt"
+    ],
+    "additionalProperties": false
+  },
+  "Batch": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "deliveryId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "deliveryNumber": {
+        "type": "string"
+      },
+      "deliveryItemId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "receivedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "manufacturedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "shelfLifeHours": {
+        "type": "number"
+      },
+      "expiresAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "initialQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "remainingQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "heldQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "availableQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "heldExpiredQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "version": {
+        "type": "number"
+      },
+      "receiptCommittedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "fresh"
+          },
+          {
+            "type": "string",
+            "const": "expiring"
+          },
+          {
+            "type": "string",
+            "const": "expired"
+          },
+          {
+            "type": "string",
+            "const": "empty"
+          }
+        ]
+      },
+      "remainingSeconds": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "id",
+      "deliveryId",
+      "deliveryNumber",
+      "deliveryItemId",
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "receivedAt",
+      "manufacturedAt",
+      "shelfLifeHours",
+      "expiresAt",
+      "initialQuantity",
+      "remainingQuantity",
+      "heldQuantity",
+      "availableQuantity",
+      "heldExpiredQuantity",
+      "version",
+      "receiptCommittedAt",
+      "status",
+      "remainingSeconds"
+    ],
+    "additionalProperties": false
+  },
+  "Delivery": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "number": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "receivedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "pending"
+          },
+          {
+            "type": "string",
+            "const": "confirmed"
+          },
+          {
+            "type": "string",
+            "const": "rejected"
+          }
+        ]
+      },
+      "source": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "manual"
+          },
+          {
+            "type": "string",
+            "const": "integration"
+          }
+        ]
+      },
+      "externalId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DeliveryItem"
+        }
+      },
+      "batches": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Batch"
+        }
+      },
+      "confirmedByUserId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rejectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rejectionReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "number",
+      "createdAt",
+      "expectedAt",
+      "receivedAt",
+      "status",
+      "source",
+      "externalId",
+      "note",
+      "lines",
+      "batches",
+      "confirmedByUserId",
+      "rejectedAt",
+      "rejectionReason"
+    ],
+    "additionalProperties": false
+  },
+  "InventoryRow": {
+    "type": "object",
+    "properties": {
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "physicalQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "heldQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "heldExpiredQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "availableQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "expiringQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "expiredQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "nearestExpiresAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "reorderPoint": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "targetStock": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "isLowStock": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "physicalQuantity",
+      "heldQuantity",
+      "heldExpiredQuantity",
+      "availableQuantity",
+      "expiringQuantity",
+      "expiredQuantity",
+      "nearestExpiresAt",
+      "reorderPoint",
+      "targetStock",
+      "isLowStock"
+    ],
+    "additionalProperties": false
+  },
+  "Requirement": {
+    "type": "object",
+    "properties": {
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "requiredQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "availableQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "missingQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      }
+    },
+    "required": [
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "requiredQuantity",
+      "availableQuantity",
+      "missingQuantity"
+    ],
+    "additionalProperties": false
+  },
+  "Allocation": {
+    "type": "object",
+    "properties": {
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "expiresAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "riskSnapshot": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/RiskSnapshot"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "batchId",
+      "ingredientId",
+      "quantity",
+      "expiresAt",
+      "riskSnapshot"
+    ],
+    "additionalProperties": false
+  },
+  "RiskSnapshot": {
+    "type": "object",
+    "properties": {
+      "policyVersion": {
+        "type": "string",
+        "const": "expiry-10pct-v1"
+      },
+      "evaluatedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "expiresAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "shelfLifeHours": {
+        "type": "number"
+      },
+      "riskStartsAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "phase": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "fresh"
+          },
+          {
+            "type": "string",
+            "const": "expiring"
+          },
+          {
+            "type": "string",
+            "const": "expired"
+          }
+        ]
+      }
+    },
+    "required": [
+      "policyVersion",
+      "evaluatedAt",
+      "expiresAt",
+      "shelfLifeHours",
+      "riskStartsAt",
+      "phase"
+    ],
+    "additionalProperties": false
+  },
+  "OrderInput": {
+    "$ref": "#/components/schemas/OrderInput21"
+  },
+  "OrderInput21": {
+    "type": "object",
+    "properties": {
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "portions": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "dishId",
+            "portions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "combos": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "comboId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "version": {
+              "$ref": "#/components/schemas/Revision"
+            },
+            "quantity": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "comboId",
+            "version",
+            "quantity"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "Revision": {
+    "type": "number"
+  },
+  "OrderPreview": {
+    "type": "object",
+    "properties": {
+      "canCreate": {
+        "type": "boolean"
+      },
+      "requirements": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Requirement"
+        }
+      },
+      "allocations": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Allocation"
+        }
+      }
+    },
+    "required": [
+      "canCreate",
+      "requirements",
+      "allocations"
+    ],
+    "additionalProperties": false
+  },
+  "Order": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "number": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "status": {
+        "type": "string",
+        "const": "completed"
+      },
+      "source": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "staff"
+          },
+          {
+            "type": "string",
+            "const": "waiter"
+          },
+          {
+            "type": "string",
+            "const": "integration"
+          },
+          {
+            "type": "string",
+            "const": "customer"
+          }
+        ]
+      },
+      "customerId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "externalId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "dishName": {
+              "type": "string"
+            },
+            "portions": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "dishId",
+            "dishName",
+            "portions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "allocations": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Allocation"
+        }
+      },
+      "composition": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CompositionSnapshot"
+        }
+      },
+      "recipeSnapshot": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "recipe": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/RecipeLine"
+              }
+            }
+          },
+          "required": [
+            "dishId",
+            "recipe"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "id",
+      "number",
+      "createdAt",
+      "status",
+      "source",
+      "externalId",
+      "lines",
+      "allocations",
+      "composition"
+    ],
+    "additionalProperties": false
+  },
+  "CompositionSnapshot": {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "dish"
+          },
+          "dishId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dishName": {
+            "type": "string"
+          },
+          "portions": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "dishId",
+          "dishName",
+          "portions"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "combo"
+          },
+          "comboId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "title": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "pricingMode": {
+            "type": "string",
+            "const": "unpriced"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dishId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "dishName": {
+                  "type": "string"
+                },
+                "portions": {
+                  "type": "number",
+                  "const": 1
+                }
+              },
+              "required": [
+                "dishId",
+                "dishName",
+                "portions"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "comboId",
+          "version",
+          "title",
+          "quantity",
+          "pricingMode",
+          "components"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  },
+  "DishAvailability": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "active": {
+        "type": "boolean"
+      },
+      "maxPortions": {
+        "type": "number"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "available"
+          },
+          {
+            "type": "string",
+            "const": "stopped"
+          },
+          {
+            "type": "string",
+            "const": "inactive"
+          }
+        ]
+      },
+      "shortages": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Requirement"
+        }
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "active",
+      "maxPortions",
+      "status",
+      "shortages"
+    ],
+    "additionalProperties": false
+  },
+  "HotOfferReason": {
+    "type": "object",
+    "properties": {
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "batchIds": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "usableExpiringQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "plannedUsage": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "earliestExpiresAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "batchIds",
+      "usableExpiringQuantity",
+      "plannedUsage",
+      "earliestExpiresAt"
+    ],
+    "additionalProperties": false
+  },
+  "HotOffer": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "score": {
+        "type": "number"
+      },
+      "maxPortions": {
+        "type": "number"
+      },
+      "suggestedPortions": {
+        "type": "number"
+      },
+      "earliestExpiresAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "reasons": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/HotOfferReason"
+        }
+      },
+      "explanation": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "score",
+      "maxPortions",
+      "suggestedPortions",
+      "earliestExpiresAt",
+      "reasons",
+      "explanation"
+    ],
+    "additionalProperties": false
+  },
+  "PurchaseSuggestion": {
+    "type": "object",
+    "properties": {
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "availableQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "expiringQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "planningQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reorderPoint": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "targetStock": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "targetQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "suggestedQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reasons": {
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "below_minimum"
+            },
+            {
+              "type": "string",
+              "const": "expiring_stock"
+            },
+            {
+              "type": "string",
+              "const": "stopped_dish"
+            }
+          ]
+        }
+      },
+      "affectedDishIds": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "required": [
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "availableQuantity",
+      "expiringQuantity",
+      "planningQuantity",
+      "reorderPoint",
+      "targetStock",
+      "targetQuantity",
+      "suggestedQuantity",
+      "reasons",
+      "affectedDishIds"
+    ],
+    "additionalProperties": false
+  },
+  "WriteOffInput": {
+    "type": "object",
+    "properties": {
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "expired"
+          },
+          {
+            "type": "string",
+            "const": "damaged"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "batchId",
+      "quantity",
+      "reason",
+      "note"
+    ],
+    "additionalProperties": false
+  },
+  "WriteOff": {
+    "type": "object",
+    "properties": {
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "expired"
+          },
+          {
+            "type": "string",
+            "const": "damaged"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "batchId",
+      "quantity",
+      "reason",
+      "note",
+      "id",
+      "createdAt"
+    ],
+    "additionalProperties": false
+  },
+  "Movement": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "receipt"
+          },
+          {
+            "type": "string",
+            "const": "order"
+          },
+          {
+            "type": "string",
+            "const": "write_off"
+          },
+          {
+            "type": "string",
+            "const": "quarantine_open"
+          },
+          {
+            "type": "string",
+            "const": "quarantine_release"
+          }
+        ]
+      },
+      "quantityDelta": {
+        "type": "string"
+      },
+      "heldQuantityDelta": {
+        "type": "string"
+      },
+      "heldAfter": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "quarantineId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "actorUserId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "integrationClientId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "eventSequence": {
+        "type": "number"
+      },
+      "riskSnapshot": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/RiskSnapshot"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "remainingAfter": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "referenceId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "referenceNumber": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "createdAt",
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "batchId",
+      "type",
+      "quantityDelta",
+      "heldQuantityDelta",
+      "heldAfter",
+      "quarantineId",
+      "actorUserId",
+      "integrationClientId",
+      "eventSequence",
+      "riskSnapshot",
+      "remainingAfter",
+      "referenceId",
+      "referenceNumber"
+    ],
+    "additionalProperties": false
+  },
+  "Dashboard": {
+    "type": "object",
+    "properties": {
+      "ingredientCount": {
+        "type": "number"
+      },
+      "activeDishCount": {
+        "type": "number"
+      },
+      "stoppedDishCount": {
+        "type": "number"
+      },
+      "lowStockIngredientCount": {
+        "type": "number"
+      },
+      "expiringBatchCount": {
+        "type": "number"
+      },
+      "expiredBatchCount": {
+        "type": "number"
+      },
+      "todayOrderCount": {
+        "type": "number"
+      },
+      "hotOfferCount": {
+        "type": "number"
+      },
+      "pendingDeliveryCount": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "ingredientCount",
+      "activeDishCount",
+      "stoppedDishCount",
+      "lowStockIngredientCount",
+      "expiringBatchCount",
+      "expiredBatchCount",
+      "todayOrderCount",
+      "hotOfferCount",
+      "pendingDeliveryCount"
+    ],
+    "additionalProperties": false
+  },
+  "ServiceMenuItem": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "maxPortions": {
+        "type": "number"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "available"
+          },
+          {
+            "type": "string",
+            "const": "stopped"
+          }
+        ]
+      },
+      "unavailableReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "maxPortions",
+      "status",
+      "unavailableReason"
+    ],
+    "additionalProperties": false
+  },
+  "ServiceOffer": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "suggestedPortions": {
+        "type": "number"
+      },
+      "maxPortions": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "suggestedPortions",
+      "maxPortions"
+    ],
+    "additionalProperties": false
+  },
+  "ServiceShortage": {
+    "type": "object",
+    "properties": {
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "missingQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      }
+    },
+    "required": [
+      "ingredientName",
+      "unit",
+      "missingQuantity"
+    ],
+    "additionalProperties": false
+  },
+  "ServicePreview": {
+    "type": "object",
+    "properties": {
+      "canCreate": {
+        "type": "boolean"
+      },
+      "shortages": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ServiceShortage"
+        }
+      }
+    },
+    "required": [
+      "canCreate",
+      "shortages"
+    ],
+    "additionalProperties": false
+  },
+  "OrderReceipt": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "number": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "status": {
+        "type": "string",
+        "const": "completed"
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "dishName": {
+              "type": "string"
+            },
+            "portions": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "dishId",
+            "dishName",
+            "portions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "composition": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CompositionSnapshot"
+        }
+      }
+    },
+    "required": [
+      "id",
+      "number",
+      "createdAt",
+      "status",
+      "lines",
+      "composition"
+    ],
+    "additionalProperties": false
+  },
+  "IntegrationClient": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "warehouseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "name": {
+        "type": "string"
+      },
+      "kind": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "supplier"
+          },
+          {
+            "type": "string",
+            "const": "pos"
+          }
+        ]
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "id",
+      "warehouseId",
+      "name",
+      "kind",
+      "createdAt"
+    ],
+    "additionalProperties": false
+  },
+  "IntegrationKey": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "clientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "label": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "expiresAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "revokedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "clientId",
+      "label",
+      "createdAt",
+      "expiresAt",
+      "revokedAt"
+    ],
+    "additionalProperties": false
+  },
+  "ApiError": {
+    "type": "object",
+    "properties": {
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "properties": {
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "shortages": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Requirement"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ServiceShortage"
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details"
+        ],
+        "additionalProperties": false
+      },
+      "meta": {
+        "$ref": "#/components/schemas/Meta"
+      }
+    },
+    "required": [
+      "error",
+      "meta"
+    ],
+    "additionalProperties": false
+  },
+  "LedgerOpeningBalance": {
+    "type": "object",
+    "properties": {
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "recordedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "physicalQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "heldQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "eventSequence": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "batchId",
+      "recordedAt",
+      "physicalQuantity",
+      "heldQuantity",
+      "eventSequence"
+    ],
+    "additionalProperties": false
+  },
+  "QuarantineInput": {
+    "type": "object",
+    "properties": {
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedBatchVersion": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "type": "string"
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "batchId",
+      "expectedBatchVersion",
+      "quantity",
+      "reason",
+      "note"
+    ],
+    "additionalProperties": false
+  },
+  "QuarantineReleaseInput": {
+    "type": "object",
+    "properties": {
+      "expectedVersion": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "expectedVersion",
+      "quantity",
+      "reason"
+    ],
+    "additionalProperties": false
+  },
+  "QuarantineWriteOffInput": {
+    "type": "object",
+    "properties": {
+      "expectedVersion": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "expired"
+          },
+          {
+            "type": "string",
+            "const": "damaged"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "expectedVersion",
+      "quantity",
+      "reason",
+      "note"
+    ],
+    "additionalProperties": false
+  },
+  "QuarantineDecision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "action": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "release"
+          },
+          {
+            "type": "string",
+            "const": "write_off"
+          }
+        ]
+      },
+      "quantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "type": "string"
+      },
+      "at": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "actorUserId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "writeOffId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "action",
+      "quantity",
+      "reason",
+      "at",
+      "actorUserId",
+      "writeOffId"
+    ],
+    "additionalProperties": false
+  },
+  "Quarantine": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "warehouseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "version": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "openedQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "remainingHeldQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "releasedQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "writtenOffQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "reason": {
+        "type": "string"
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "createdByUserId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "open"
+          },
+          {
+            "type": "string",
+            "const": "closed"
+          }
+        ]
+      },
+      "closedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "decisions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/QuarantineDecision"
+        }
+      }
+    },
+    "required": [
+      "id",
+      "warehouseId",
+      "batchId",
+      "version",
+      "openedQuantity",
+      "remainingHeldQuantity",
+      "releasedQuantity",
+      "writtenOffQuantity",
+      "reason",
+      "note",
+      "createdAt",
+      "createdByUserId",
+      "status",
+      "closedAt",
+      "decisions"
+    ],
+    "additionalProperties": false
+  },
+  "QuarantineOrderUsage": {
+    "type": "object",
+    "properties": {
+      "orderId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "number": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "source": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "staff"
+          },
+          {
+            "type": "string",
+            "const": "waiter"
+          },
+          {
+            "type": "string",
+            "const": "customer"
+          },
+          {
+            "type": "string",
+            "const": "integration"
+          }
+        ]
+      },
+      "usedFromBatchQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      }
+    },
+    "required": [
+      "orderId",
+      "number",
+      "createdAt",
+      "source",
+      "usedFromBatchQuantity",
+      "unit"
+    ],
+    "additionalProperties": false
+  },
+  "ComboComponent": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "portions": {
+        "type": "number",
+        "const": 1
+      }
+    },
+    "required": [
+      "dishId",
+      "portions"
+    ],
+    "additionalProperties": false
+  },
+  "ComboInput": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "components": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ComboComponent"
+        }
+      }
+    },
+    "required": [
+      "title",
+      "components"
+    ],
+    "additionalProperties": false
+  },
+  "Combo": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "components": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ComboComponent"
+        }
+      },
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "version": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "draft"
+          },
+          {
+            "type": "string",
+            "const": "published"
+          },
+          {
+            "type": "string",
+            "const": "archived"
+          }
+        ]
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "recipeFingerprint": {
+        "type": "string"
+      },
+      "needsReview": {
+        "type": "boolean"
+      },
+      "pricingMode": {
+        "type": "string",
+        "const": "unpriced"
+      }
+    },
+    "required": [
+      "title",
+      "components",
+      "id",
+      "version",
+      "status",
+      "createdAt",
+      "updatedAt",
+      "recipeFingerprint",
+      "needsReview",
+      "pricingMode"
+    ],
+    "additionalProperties": false
+  },
+  "PublicCombo": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "version": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "title": {
+        "type": "string"
+      },
+      "components": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "dishName": {
+              "type": "string"
+            },
+            "portions": {
+              "type": "number",
+              "const": 1
+            }
+          },
+          "required": [
+            "dishId",
+            "dishName",
+            "portions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "available"
+          },
+          {
+            "type": "string",
+            "const": "stopped"
+          }
+        ]
+      },
+      "maxUnits": {
+        "type": "number"
+      },
+      "unavailableReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "pricingMode": {
+        "type": "string",
+        "const": "unpriced"
+      }
+    },
+    "required": [
+      "id",
+      "version",
+      "title",
+      "components",
+      "status",
+      "maxUnits",
+      "unavailableReason",
+      "pricingMode"
+    ],
+    "additionalProperties": false
+  },
+  "ComboPlan": {
+    "type": "object",
+    "properties": {
+      "asOf": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "stateRevision": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "method": {
+        "type": "string",
+        "const": "joint_fefo_greedy_v1"
+      },
+      "proposals": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "titleSuggestion": {
+              "type": "string"
+            },
+            "components": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ComboComponent"
+              }
+            },
+            "suggestedUnits": {
+              "type": "number"
+            },
+            "explanation": {
+              "type": "string"
+            },
+            "individualMaxUnits": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "titleSuggestion",
+            "components",
+            "suggestedUnits",
+            "explanation",
+            "individualMaxUnits"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "allocations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "batchId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ingredientId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "unit": {
+              "$ref": "#/components/schemas/Unit"
+            },
+            "quantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "expiringQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            }
+          },
+          "required": [
+            "batchId",
+            "ingredientId",
+            "unit",
+            "quantity",
+            "expiringQuantity"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "emptyReason": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "no_risk_stock"
+          },
+          {
+            "type": "string",
+            "const": "no_feasible_pairs"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isReservation": {
+        "type": "boolean",
+        "const": false
+      }
+    },
+    "required": [
+      "asOf",
+      "stateRevision",
+      "method",
+      "proposals",
+      "allocations",
+      "emptyReason",
+      "isReservation"
+    ],
+    "additionalProperties": false
+  },
+  "ExternalOrderInput21": {
+    "type": "object",
+    "properties": {
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "portions": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "dishId",
+            "portions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "combos": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "comboId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "version": {
+              "$ref": "#/components/schemas/Revision"
+            },
+            "quantity": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "comboId",
+            "version",
+            "quantity"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "externalId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "lines",
+      "externalId"
+    ],
+    "additionalProperties": false
+  },
+  "StopForecast": {
+    "type": "object",
+    "properties": {
+      "asOf": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "stateRevision": {
+        "$ref": "#/components/schemas/Revision"
+      },
+      "method": {
+        "type": "string",
+        "const": "mean_demand_fefo_events_v1"
+      },
+      "horizonEndsAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "calculatedThrough": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "history": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "exposureHours": {
+            "type": "number"
+          },
+          "completedOrders": {
+            "type": "number"
+          },
+          "observedFullDays": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "exposureHours",
+          "completedOrders",
+          "observedFullDays"
+        ],
+        "additionalProperties": false
+      },
+      "datasetKind": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "observed"
+          },
+          {
+            "type": "string",
+            "const": "demo_seeded"
+          }
+        ]
+      },
+      "assumptions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "dishName": {
+              "type": "string"
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "already_stopped"
+                },
+                {
+                  "type": "string",
+                  "const": "predicted"
+                },
+                {
+                  "type": "string",
+                  "const": "not_reached_within_horizon"
+                },
+                {
+                  "type": "string",
+                  "const": "insufficient_history"
+                },
+                {
+                  "type": "string",
+                  "const": "calculation_limited"
+                }
+              ]
+            },
+            "estimatedWindow": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "to": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "observedFrom": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "exposureHours": {
+              "type": "number"
+            },
+            "observedPortions": {
+              "type": "number"
+            },
+            "portionsPerCalendarHour": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "confidence": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "insufficient"
+                },
+                {
+                  "type": "string",
+                  "const": "low"
+                },
+                {
+                  "type": "string",
+                  "const": "medium"
+                }
+              ]
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "limitingIngredients": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ingredientId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "ingredientName": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "$ref": "#/components/schemas/Unit"
+                  },
+                  "cause": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": "consumption"
+                      },
+                      {
+                        "type": "string",
+                        "const": "expiry"
+                      },
+                      {
+                        "type": "string",
+                        "const": "combined"
+                      },
+                      {
+                        "type": "string",
+                        "const": "current_shortage"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "ingredientId",
+                  "ingredientName",
+                  "unit",
+                  "cause"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "dishId",
+            "dishName",
+            "status",
+            "estimatedWindow",
+            "observedFrom",
+            "exposureHours",
+            "observedPortions",
+            "portionsPerCalendarHour",
+            "confidence",
+            "limitations",
+            "limitingIngredients"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "asOf",
+      "stateRevision",
+      "method",
+      "horizonEndsAt",
+      "calculatedThrough",
+      "history",
+      "datasetKind",
+      "assumptions",
+      "items"
+    ],
+    "additionalProperties": false
+  },
+  "RiskReport": {
+    "type": "object",
+    "properties": {
+      "view": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "period"
+          },
+          {
+            "type": "string",
+            "const": "cohort"
+          }
+        ]
+      },
+      "from": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "to": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "asOf": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "cohortEntry": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "dated"
+          },
+          {
+            "type": "string",
+            "const": "unknown"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "unknownEntryBatchCount": {
+        "type": "number"
+      },
+      "trackingStartedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "policyVersion": {
+        "type": "string",
+        "const": "expiry-10pct-v1"
+      },
+      "completeness": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "complete"
+          },
+          {
+            "type": "string",
+            "const": "partial"
+          },
+          {
+            "type": "string",
+            "const": "unknown"
+          }
+        ]
+      },
+      "page": {
+        "type": "number"
+      },
+      "pageSize": {
+        "type": "number"
+      },
+      "total": {
+        "type": "number"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RiskReportRow"
+        }
+      },
+      "totalsByIngredient": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ingredientId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ingredientName": {
+              "type": "string"
+            },
+            "unit": {
+              "$ref": "#/components/schemas/Unit"
+            },
+            "usedExpiringQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "usedFreshQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "unknownRiskOrderQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "writtenOffExpiredQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "writtenOffDamagedQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "knownCohortEntryQuantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "unknownCohortCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ingredientId",
+            "ingredientName",
+            "unit",
+            "usedExpiringQuantity",
+            "usedFreshQuantity",
+            "unknownRiskOrderQuantity",
+            "writtenOffExpiredQuantity",
+            "writtenOffDamagedQuantity",
+            "knownCohortEntryQuantity",
+            "unknownCohortCount"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "view",
+      "from",
+      "to",
+      "asOf",
+      "cohortEntry",
+      "unknownEntryBatchCount",
+      "trackingStartedAt",
+      "policyVersion",
+      "completeness",
+      "page",
+      "pageSize",
+      "total",
+      "items",
+      "totalsByIngredient"
+    ],
+    "additionalProperties": false
+  },
+  "RiskReportRow": {
+    "type": "object",
+    "properties": {
+      "batchId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingredientName": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/Unit"
+      },
+      "deliveryId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "deliveryNumber": {
+        "type": "string"
+      },
+      "completeness": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "complete"
+          },
+          {
+            "type": "string",
+            "const": "partial"
+          },
+          {
+            "type": "string",
+            "const": "unknown"
+          }
+        ]
+      },
+      "limitations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "usedExpiringQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "usedFreshQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "unknownRiskOrderQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "writtenOffExpiredQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "writtenOffDamagedQuantity": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "remainingPhysicalAsOf": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "heldAsOf": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "expiredAsOf": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+      },
+      "cohortAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "riskAtEntry": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "usedInOrdersAfterEntry": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "writtenOffAfterEntry": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "usedFraction": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "batchId",
+      "ingredientId",
+      "ingredientName",
+      "unit",
+      "deliveryId",
+      "deliveryNumber",
+      "completeness",
+      "limitations",
+      "usedExpiringQuantity",
+      "usedFreshQuantity",
+      "unknownRiskOrderQuantity",
+      "writtenOffExpiredQuantity",
+      "writtenOffDamagedQuantity",
+      "remainingPhysicalAsOf",
+      "heldAsOf",
+      "expiredAsOf",
+      "cohortAt",
+      "riskAtEntry",
+      "usedInOrdersAfterEntry",
+      "writtenOffAfterEntry",
+      "usedFraction"
+    ],
+    "additionalProperties": false
+  },
+  "ConfirmDeliveryInput": {
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "receivedAtMode": {
+            "type": "string",
+            "const": "server"
+          }
+        },
+        "required": [
+          "receivedAtMode"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "receivedAt"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  },
+  "ManualOfferInput": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "publicText": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 500
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "startsAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "endsAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "dishId",
+      "title",
+      "publicText",
+      "startsAt",
+      "endsAt"
+    ],
+    "additionalProperties": false
+  },
+  "ManualOffer": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "title": {
+        "type": "string"
+      },
+      "publicText": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "startsAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "endsAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "draft"
+          },
+          {
+            "type": "string",
+            "const": "published"
+          },
+          {
+            "type": "string",
+            "const": "archived"
+          }
+        ]
+      },
+      "version": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "publishedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "createdByUserId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "updatedByUserId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "effectiveStartsAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "effectiveState": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "draft"
+          },
+          {
+            "type": "string",
+            "const": "scheduled"
+          },
+          {
+            "type": "string",
+            "const": "visible"
+          },
+          {
+            "type": "string",
+            "const": "unavailable"
+          },
+          {
+            "type": "string",
+            "const": "ended"
+          },
+          {
+            "type": "string",
+            "const": "archived"
+          }
+        ]
+      },
+      "unavailableReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "dishId",
+      "title",
+      "publicText",
+      "startsAt",
+      "endsAt",
+      "id",
+      "dishName",
+      "status",
+      "version",
+      "createdAt",
+      "updatedAt",
+      "publishedAt",
+      "createdByUserId",
+      "updatedByUserId",
+      "effectiveStartsAt",
+      "effectiveState",
+      "unavailableReason"
+    ],
+    "additionalProperties": false
+  },
+  "PublicPromotion": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "publicText": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "startsAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "endsAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "title",
+      "publicText",
+      "startsAt",
+      "endsAt"
+    ],
+    "additionalProperties": false
+  },
+  "OfferCard": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "maxPortions": {
+        "type": "number"
+      },
+      "suggestedPortions": {
+        "type": "number"
+      },
+      "automatic": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/HotOffer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "manual": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "publicText": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "startsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "title",
+              "publicText",
+              "startsAt",
+              "endsAt",
+              "id",
+              "version"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "maxPortions",
+      "suggestedPortions",
+      "automatic",
+      "manual"
+    ],
+    "additionalProperties": false
+  },
+  "PublicOfferCard": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "maxPortions": {
+        "type": "number"
+      },
+      "suggestedPortions": {
+        "type": "number"
+      },
+      "isAutomatic": {
+        "type": "boolean"
+      },
+      "promotion": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PublicPromotion"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "maxPortions",
+      "suggestedPortions",
+      "isAutomatic",
+      "promotion"
+    ],
+    "additionalProperties": false
+  },
+  "PortalUnit": {
+    "anyOf": [
+      {
+        "type": "string",
+        "const": "g"
+      },
+      {
+        "type": "string",
+        "const": "ml"
+      },
+      {
+        "type": "string",
+        "const": "pcs"
+      }
+    ]
+  },
+  "PortalMeta": {
+    "type": "object",
+    "properties": {
+      "serverTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "requestId": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "required": [
+      "serverTime",
+      "requestId"
+    ],
+    "additionalProperties": false
+  },
+  "PortalApiError": {
+    "type": "object",
+    "properties": {
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "properties": {
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details"
+        ],
+        "additionalProperties": false
+      },
+      "meta": {
+        "$ref": "#/components/schemas/PortalMeta"
+      }
+    },
+    "required": [
+      "error",
+      "meta"
+    ],
+    "additionalProperties": false
+  },
+  "IntegrationIdentity": {
+    "type": "object",
+    "properties": {
+      "clientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "warehouseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "name": {
+        "type": "string"
+      },
+      "kind": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "supplier"
+          },
+          {
+            "type": "string",
+            "const": "pos"
+          }
+        ]
+      }
+    },
+    "required": [
+      "clientId",
+      "warehouseId",
+      "name",
+      "kind"
+    ],
+    "additionalProperties": false
+  },
+  "CatalogIngredient": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "name": {
+        "type": "string"
+      },
+      "unit": {
+        "$ref": "#/components/schemas/PortalUnit"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "unit"
+    ],
+    "additionalProperties": false
+  },
+  "PurchaseRequestStatus": {
+    "anyOf": [
+      {
+        "type": "string",
+        "const": "draft"
+      },
+      {
+        "type": "string",
+        "const": "submitted"
+      },
+      {
+        "type": "string",
+        "const": "approved"
+      },
+      {
+        "type": "string",
+        "const": "delivery_pending"
+      },
+      {
+        "type": "string",
+        "const": "received"
+      },
+      {
+        "type": "string",
+        "const": "rejected"
+      },
+      {
+        "type": "string",
+        "const": "cancelled"
+      },
+      {
+        "type": "string",
+        "const": "delivery_rejected"
+      }
+    ]
+  },
+  "PurchaseRequestInput": {
+    "type": "object",
+    "properties": {
+      "supplierClientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ingredientId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "quantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            }
+          },
+          "required": [
+            "ingredientId",
+            "quantity"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "supplierClientId",
+      "expectedAt",
+      "note",
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "PurchaseRequest": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "number": {
+        "type": "string"
+      },
+      "warehouseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "version": {
+        "type": "number"
+      },
+      "supplierClientId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "supplierName": {
+        "type": "string"
+      },
+      "status": {
+        "$ref": "#/components/schemas/PurchaseRequestStatus"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "submittedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "approvedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "closedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rejectionReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "deliveryId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ingredientId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ingredientName": {
+              "type": "string"
+            },
+            "unit": {
+              "$ref": "#/components/schemas/PortalUnit"
+            },
+            "quantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            }
+          },
+          "required": [
+            "ingredientId",
+            "ingredientName",
+            "unit",
+            "quantity"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "id",
+      "number",
+      "warehouseId",
+      "version",
+      "supplierClientId",
+      "supplierName",
+      "status",
+      "createdAt",
+      "submittedAt",
+      "approvedAt",
+      "closedAt",
+      "expectedAt",
+      "note",
+      "rejectionReason",
+      "deliveryId",
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "PortalDeliveryLineInput": {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "ingredientId",
+          "quantity",
+          "expiresAt"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+          },
+          "manufacturedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shelfLifeHours": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "ingredientId",
+          "quantity",
+          "manufacturedAt"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  },
+  "PortalDeliveryInput": {
+    "type": "object",
+    "properties": {
+      "number": {
+        "type": "string"
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PortalDeliveryLineInput"
+        }
+      }
+    },
+    "required": [
+      "number",
+      "expectedAt",
+      "note",
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "ExternalDeliveryInput": {
+    "type": "object",
+    "properties": {
+      "number": {
+        "type": "string"
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PortalDeliveryLineInput"
+        }
+      },
+      "externalId": {
+        "type": "string"
+      },
+      "purchaseRequestId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "number",
+      "expectedAt",
+      "note",
+      "lines",
+      "externalId"
+    ],
+    "additionalProperties": false
+  },
+  "SupplierDelivery": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "number": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "expectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "receivedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "pending"
+          },
+          {
+            "type": "string",
+            "const": "confirmed"
+          },
+          {
+            "type": "string",
+            "const": "rejected"
+          }
+        ]
+      },
+      "source": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "manual"
+          },
+          {
+            "type": "string",
+            "const": "integration"
+          }
+        ]
+      },
+      "externalId": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "purchaseRequestId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rejectedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rejectionReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ingredientId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ingredientName": {
+              "type": "string"
+            },
+            "unit": {
+              "$ref": "#/components/schemas/PortalUnit"
+            },
+            "quantity": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,3})?$"
+            },
+            "manufacturedAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "shelfLifeHours": {
+              "type": "number"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "id",
+            "ingredientId",
+            "ingredientName",
+            "unit",
+            "quantity",
+            "manufacturedAt",
+            "shelfLifeHours",
+            "expiresAt"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "id",
+      "number",
+      "createdAt",
+      "expectedAt",
+      "receivedAt",
+      "status",
+      "source",
+      "externalId",
+      "purchaseRequestId",
+      "note",
+      "rejectedAt",
+      "rejectionReason",
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "CustomerUser": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "username": {
+        "type": "string"
+      },
+      "displayName": {
+        "type": "string"
+      },
+      "role": {
+        "type": "string",
+        "const": "customer"
+      }
+    },
+    "required": [
+      "id",
+      "username",
+      "displayName",
+      "role"
+    ],
+    "additionalProperties": false
+  },
+  "CustomerOutlet": {
+    "type": "object",
+    "properties": {
+      "warehouseId": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "timeZone": {
+        "type": "string",
+        "const": "Europe/Moscow"
+      }
+    },
+    "required": [
+      "warehouseId",
+      "name",
+      "timeZone"
+    ],
+    "additionalProperties": false
+  },
+  "CustomerMenuItem": {
+    "type": "object",
+    "properties": {
+      "dishId": {
+        "type": "string"
+      },
+      "dishName": {
+        "type": "string"
+      },
+      "maxPortions": {
+        "type": "number"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "available"
+          },
+          {
+            "type": "string",
+            "const": "stopped"
+          }
+        ]
+      },
+      "unavailableReason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "dishId",
+      "dishName",
+      "maxPortions",
+      "status",
+      "unavailableReason"
+    ],
+    "additionalProperties": false
+  },
+  "CustomerOrderInput": {
+    "$ref": "#/components/schemas/OrderInput21"
+  },
+  "CustomerReceipt": {
+    "type": "object",
+    "properties": {
+      "composition": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CompositionSnapshot"
+        }
+      },
+      "id": {
+        "type": "string"
+      },
+      "number": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "const": "completed"
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dishId": {
+              "type": "string"
+            },
+            "dishName": {
+              "type": "string"
+            },
+            "portions": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "dishId",
+            "dishName",
+            "portions"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "id",
+      "number",
+      "createdAt",
+      "status",
+      "lines"
+    ],
+    "additionalProperties": false
+  },
+  "CustomerPreview": {
+    "type": "object",
+    "properties": {
+      "canCreate": {
+        "type": "boolean"
+      },
+      "shortages": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ingredientName": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "missingQuantity": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "ingredientName",
+            "unit",
+            "missingQuantity"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "canCreate",
+      "shortages"
+    ],
+    "additionalProperties": false
+  },
+  "AuthLogin": {
+    "type": "object",
+    "properties": {
+      "username": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "username",
+      "password"
+    ],
+    "additionalProperties": false
+  },
+  "AuthRegister": {
+    "type": "object",
+    "properties": {
+      "username": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_.-]{3,64}$"
+      },
+      "password": {
+        "type": "string",
+        "minLength": 12,
+        "maxLength": 128
+      },
+      "displayName": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
+    },
+    "required": [
+      "username",
+      "password",
+      "displayName"
+    ],
+    "additionalProperties": false
+  }
+}

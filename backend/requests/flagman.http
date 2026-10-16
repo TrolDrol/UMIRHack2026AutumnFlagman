@@ -1,0 +1,67 @@
+@base = http://localhost:8080
+@warehouse = eeeeeeee-0000-4000-8000-000000000001
+@userId = replace-with-user-id
+@csrf = replace-with-request-token-after-login
+@dishId = replace-with-dish-id
+@key = 22222222-2222-4222-8222-222222222222
+
+### Runtime / readiness
+GET {{base}}/api/v2/runtime
+
+### CSRF cookie/request token before login
+GET {{base}}/api/v2/auth/csrf
+
+### Login: replace password/token; retain cookies in HTTP client
+POST {{base}}/api/v2/auth/login
+Origin: http://localhost:8080
+X-CSRF-TOKEN: {{csrf}}
+Content-Type: application/json
+
+{"username":"demo-owner","password":"replace-with-Demo__Password"}
+
+### Refresh token after login
+GET {{base}}/api/v2/auth/csrf
+
+### Catalog, stock, offers
+GET {{base}}/api/v2/warehouses/{{warehouse}}/dishes?pageSize=100
+
+###
+GET {{base}}/api/v2/warehouses/{{warehouse}}/inventory
+
+### Preview
+POST {{base}}/api/v2/warehouses/{{warehouse}}/orders/preview
+Origin: http://localhost:8080
+X-CSRF-TOKEN: {{csrf}}
+X-Rims-Expected-User-Id: {{userId}}
+Content-Type: application/json
+
+{"lines":[{"dishId":"{{dishId}}","portions":2}]}
+
+### Create; repeat exact request/key after a lost response
+POST {{base}}/api/v2/warehouses/{{warehouse}}/orders
+Origin: http://localhost:8080
+X-CSRF-TOKEN: {{csrf}}
+X-Rims-Expected-User-Id: {{userId}}
+Idempotency-Key: {{key}}
+Content-Type: application/json
+
+{"lines":[{"dishId":"{{dishId}}","portions":2}]}
+
+### Changed body + same key -> 409 IDEMPOTENCY_KEY_REUSED
+POST {{base}}/api/v2/warehouses/{{warehouse}}/orders
+Origin: http://localhost:8080
+X-CSRF-TOKEN: {{csrf}}
+X-Rims-Expected-User-Id: {{userId}}
+Idempotency-Key: {{key}}
+Content-Type: application/json
+
+{"lines":[{"dishId":"{{dishId}}","portions":1}]}
+
+### Ledger / history / current stop
+GET {{base}}/api/v2/warehouses/{{warehouse}}/movements
+
+###
+GET {{base}}/api/v2/warehouses/{{warehouse}}/orders
+
+###
+GET {{base}}/api/v2/warehouses/{{warehouse}}/stop-list

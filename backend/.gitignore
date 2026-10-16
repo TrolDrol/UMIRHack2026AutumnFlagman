@@ -1,0 +1,12 @@
+[Bb]in/
+[Oo]bj/
+.vscode/
+*.user
+*.sln
+*.slnx
+!RestaurantManagement.slnx
+.test-postgres/
+.test-postgres-integration/
+.tools/
+.artifacts/
+.keys/

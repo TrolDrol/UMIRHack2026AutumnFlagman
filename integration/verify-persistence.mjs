@@ -1,0 +1,37 @@
+import { createRequire } from 'node:module';
+import { readFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const require = createRequire(new URL('../frontend/package.json', import.meta.url));
+const { chromium } = require('playwright');
+const url = process.env.RIMS_LIVE_URL || 'http://127.0.0.1:4180';
+if (!['localhost', '127.0.0.1'].includes(new URL(url).hostname)) throw Error('Persistence check requires isolated loopback stack');
+const saved = JSON.parse(await readFile(new URL('./.artifacts/live-browser.json', import.meta.url), 'utf8'));
+const password = process.env.RIMS_LIVE_PASSWORD;
+if (!password) throw Error('RIMS_LIVE_PASSWORD required');
+const browser = await chromium.launch();
+try {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto(url + '/login');
+  await page.getByLabel('Имя пользователя').fill('demo-owner');
+  await page.getByLabel('Пароль', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await page.getByRole('button', { name: 'Открыть предприятие' }).first().click();
+  await page.getByRole('heading', { name: 'Обзор ресторана' }).waitFor();
+  const get = async path => { const r = await context.request.get(url + path); assert.equal(r.status(), 200); return (await r.json()).data; };
+  assert.equal((await get('/api/v2/runtime')).backendInstanceId, saved.runtime.backendInstanceId);
+  const W = `/api/v2/warehouses/${saved.warehouse}`;
+  assert.equal((await get(W + `/purchase-requests/${saved.requestId}`)).status, 'received');
+  assert.equal((await get(W + `/deliveries/${saved.deliveryId}`)).status, 'confirmed');
+  assert.equal((await get(W + `/orders/${saved.orderId}`)).id, saved.orderId);
+  await page.goto(url + '/client/login');
+  await page.getByLabel('Логин', { exact: true }).fill(saved.customer);
+  await page.getByLabel('Пароль', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await page.getByRole('heading', { name: 'Выберите заведение' }).waitFor();
+  await page.goto(url + `/client/outlets/${saved.warehouse}/orders/${saved.orderId}`);
+  await page.getByRole('heading', { name: 'Заказ зарегистрирован' }).waitFor();
+  const order = await get(`/api/v2/customer/warehouses/${saved.warehouse}/orders/${saved.orderId}`);
+  assert.ok(JSON.stringify(order.composition).includes(saved.comboId));
+  console.log('PASS persistent runtime/request/delivery/order/composition in a fresh browser after restart');
+} finally { await browser.close(); }

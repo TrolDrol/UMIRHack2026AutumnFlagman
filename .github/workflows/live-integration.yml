@@ -1,0 +1,85 @@
+name: Three portals with real ASP.NET and PostgreSQL
+on: [push, pull_request]
+jobs:
+  live-browser:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_DB: flagman_browser_test
+          POSTGRES_USER: rims_test
+          POSTGRES_PASSWORD: ci-isolated-only-password
+        ports: ["55440:5432"]
+        options: --health-cmd "pg_isready -U rims_test -d flagman_browser_test" --health-interval 5s --health-timeout 3s --health-retries 15
+    env:
+      ConnectionStrings__Default: Host=127.0.0.1;Port=55440;Database=flagman_browser_test;Username=rims_test;Password=ci-isolated-only-password
+      RIMS_TEST_POSTGRES: Host=127.0.0.1;Port=55440;Database=flagman_browser_test;Username=rims_test;Password=ci-isolated-only-password
+      ASPNETCORE_ENVIRONMENT: Development
+      Demo__Password: ci-isolated-browser-password
+      RIMS_LIVE_PASSWORD: ci-isolated-browser-password
+      PGPASSWORD: ci-isolated-only-password
+      App__AllowedOrigins__0: http://127.0.0.1:4180
+      App__MetricsEnabled: "true"
+      Logging__LogLevel__Default: Error
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 10.0.401 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: npm ci
+        working-directory: packages/demo-api
+      - run: npm ci
+        working-directory: frontend
+      - run: npm ci
+        working-directory: customer_frontend
+      - run: npm ci
+        working-directory: supplier_frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: npm run build
+        working-directory: customer_frontend
+      - run: npm run build
+        working-directory: supplier_frontend
+      - run: npm run check:contract
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: dotnet restore backend/RestaurantManagement.slnx --locked-mode
+      - run: dotnet build backend/RestaurantManagement.slnx --no-restore -c Release
+      - name: Real browser, SQL metrics and restart acceptance
+        shell: bash
+        run: |
+          dll=backend/src/RestaurantManagement.WebApi/bin/Release/net10.0/RestaurantManagement.WebApi.dll
+          dotnet "$dll" migrate
+          dotnet "$dll" seed-demo
+          dotnet "$dll" --urls http://127.0.0.1:5188 > /tmp/rims-api.log 2>&1 &
+          api_pid=$!
+          node integration/gateway.mjs > /tmp/rims-gateway.log 2>&1 &
+          gateway_pid=$!
+          trap 'kill "$api_pid" "$gateway_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:5188/health/ready > /dev/null; then break; fi
+            sleep 1
+          done
+          node integration/live-browser.mjs
+          node integration/verify-runtime-replacement.mjs
+          node integration/live-browser.mjs
+          node integration/verify-live-metrics.mjs
+          docker stop '${{ job.services.postgres.id }}'
+          node integration/verify-db-unavailable.mjs
+          docker start '${{ job.services.postgres.id }}'
+          kill "$api_pid"
+          wait "$api_pid" || true
+          dotnet "$dll" --urls http://127.0.0.1:5188 > /tmp/rims-api.log 2>&1 &
+          api_pid=$!
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:5188/health/ready > /dev/null; then break; fi
+            sleep 1
+          done
+          node integration/verify-persistence.mjs
+          node integration/verify-live-metrics.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: live-browser-verification, path: integration/.artifacts }

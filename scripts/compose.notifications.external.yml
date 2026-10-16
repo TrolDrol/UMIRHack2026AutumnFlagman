@@ -1,0 +1,14 @@
+# Explicit external SMTP configuration; generated alert routes remain muted.
+services:
+  grafana:
+    environment:
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: ${GF_SMTP_HOST:?Set SMTP host}
+      GF_SMTP_USER: ${GF_SMTP_USER:?Set SMTP user}
+      GF_SMTP_FROM_ADDRESS: ${GF_SMTP_FROM_ADDRESS:?Set SMTP from address}
+      GF_SMTP_PASSWORD__FILE: /run/secrets/smtp_password
+      GF_SMTP_SKIP_VERIFY: "false"
+      GF_SMTP_STARTTLS_POLICY: MandatoryStartTLS
+    secrets: [smtp_password]
+secrets:
+  smtp_password: {file: ../grafana/secrets/smtp_password}

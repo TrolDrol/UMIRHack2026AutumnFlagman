@@ -1,2 +1,9 @@
-*
-!.gitignore
+node_modules/
+dist/
+dist-demo/
+test-results/
+playwright-report/
+.env.local
+.env.*.local
+*.tsbuildinfo
+.npm-cache/

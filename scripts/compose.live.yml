@@ -1,0 +1,70 @@
+name: rims-live-local
+x-api-env: &api-env
+  ConnectionStrings__Default: Host=db;Database=rims;Username=rims;Password=${RIMS_DB_PASSWORD:?Set RIMS_DB_PASSWORD in private env}
+  ASPNETCORE_ENVIRONMENT: ${RIMS_ENVIRONMENT:-Development}
+  App__MetricsEnabled: "true"
+  App__TrustedProxies__0: ${RIMS_GATEWAY_IP:-172.30.82.10}
+  App__AllowedOrigins__0: ${RIMS_PUBLIC_ORIGIN:-http://localhost:3288}
+services:
+  db:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: rims
+      POSTGRES_USER: rims
+      POSTGRES_PASSWORD: ${RIMS_DB_PASSWORD:?Set RIMS_DB_PASSWORD}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    networks: [database]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U rims -d rims"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  migrate:
+    image: ${RIMS_BACKEND_IMAGE:-rims-backend:local}
+    build: {context: .., dockerfile: backend/Dockerfile}
+    command: [migrate]
+    environment: *api-env
+    networks: [database]
+    depends_on: {db: {condition: service_healthy}}
+    restart: "no"
+  backend:
+    image: ${RIMS_BACKEND_IMAGE:-rims-backend:local}
+    build: {context: .., dockerfile: backend/Dockerfile}
+    environment: *api-env
+    volumes: [data-protection:/var/lib/rims/keys]
+    networks: [database, application, telemetry]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    restart: unless-stopped
+  frontend:
+    image: ${RIMS_FRONTEND_IMAGE:-rims-frontend:local-live}
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      args: {FRONTEND_MODE: production}
+    volumes: [./runtime/nginx.live.conf:/etc/nginx/conf.d/default.conf:ro]
+    ports: ["127.0.0.1:${RIMS_FRONTEND_PORT:-3288}:8080"]
+    networks:
+      application: {ipv4_address: "${RIMS_GATEWAY_IP:-172.30.82.10}"}
+    depends_on: [backend, customer_frontend, supplier_frontend]
+  customer_frontend:
+    image: ${RIMS_CUSTOMER_FRONTEND_IMAGE:-rims-customer:local-live}
+    build:
+      context: ..
+      dockerfile: customer_frontend/Dockerfile
+      args: {DEMO_MODE: "false"}
+    networks: [application]
+  supplier_frontend:
+    image: ${RIMS_SUPPLIER_FRONTEND_IMAGE:-rims-supplier:local-live}
+    build:
+      context: ..
+      dockerfile: supplier_frontend/Dockerfile
+      args: {VITE_DEMO_MODE: "false"}
+    networks: [application]
+volumes:
+  postgres-data:
+  data-protection:
+networks:
+  database: {internal: true}
+  application:
+    ipam: {config: [{subnet: "${RIMS_APPLICATION_SUBNET:-172.30.82.0/24}"}]}
+  telemetry: {internal: true}

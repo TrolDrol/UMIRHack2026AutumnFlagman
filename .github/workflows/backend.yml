@@ -1,0 +1,37 @@
+name: Backend contracts and PostgreSQL
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_DB: rims_test
+          POSTGRES_USER: rims_test
+          POSTGRES_PASSWORD: ci-isolated-only-password
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U rims_test -d rims_test" --health-interval 5s --health-timeout 3s --health-retries 15
+    env:
+      RIMS_TEST_POSTGRES: Host=127.0.0.1;Port=5432;Database=rims_test;Username=rims_test;Password=ci-isolated-only-password
+      RIMS_TEST_ARTIFACTS: ${{ github.workspace }}/backend/.artifacts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 10.0.401 }
+      - name: Matched PostgreSQL client tools from the isolated image
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/pg-tools"
+          for tool in pg_dump pg_restore; do
+            printf '#!/bin/sh\nexec docker run --rm --network host -e PGPASSWORD -v /tmp:/tmp postgres:17.6-alpine %s "$@"\n' "$tool" > "$RUNNER_TEMP/pg-tools/$tool"
+            chmod +x "$RUNNER_TEMP/pg-tools/$tool"
+          done
+          echo "$RUNNER_TEMP/pg-tools" >> "$GITHUB_PATH"
+      - run: dotnet restore backend/RestaurantManagement.slnx --locked-mode
+      - run: node backend/scripts/check-openapi.mjs
+      - run: dotnet build backend/RestaurantManagement.slnx --no-restore -c Release
+      - run: dotnet test backend/tests/RestaurantManagement.Tests --no-restore -c Release --logger trx --results-directory backend/.artifacts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: backend-verification, path: backend/.artifacts }

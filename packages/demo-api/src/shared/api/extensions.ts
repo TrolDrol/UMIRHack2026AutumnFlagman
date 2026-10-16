@@ -1,0 +1,225 @@
+// Canonical API 2.1 extensions. See docs/product_extensions_2026_10_12/API_CONTRACT.md.
+export type { ConfirmDeliveryInput, ManualOfferInput, ManualOffer, PublicPromotion, OfferCard, PublicOfferCard } from "./offers";
+export type UUID = string;
+export type Timestamp = string;
+export type Quantity = string;
+export type Unit = "g" | "ml" | "pcs";
+export type Revision = number;
+export type RiskSnapshot = {
+  policyVersion: "expiry-10pct-v1";
+  evaluatedAt: Timestamp;
+  expiresAt: Timestamp;
+  shelfLifeHours: number;
+  riskStartsAt: Timestamp;
+  phase: "fresh" | "expiring" | "expired";
+};
+export type LedgerOpeningBalance = {
+  batchId: UUID;
+  recordedAt: Timestamp;
+  physicalQuantity: Quantity;
+  heldQuantity: Quantity;
+  eventSequence: number;
+};
+export type QuarantineInput = {
+  batchId: UUID;
+  expectedBatchVersion: Revision;
+  quantity: Quantity;
+  reason: string;
+  note: string | null;
+};
+export type QuarantineReleaseInput = {
+  expectedVersion: Revision;
+  quantity: Quantity;
+  reason: string;
+};
+export type QuarantineWriteOffInput = {
+  expectedVersion: Revision;
+  quantity: Quantity;
+  reason: "expired" | "damaged";
+  note: string | null;
+};
+export type QuarantineDecision = {
+  id: UUID;
+  action: "release" | "write_off";
+  quantity: Quantity;
+  reason: string;
+  at: Timestamp;
+  actorUserId: UUID;
+  writeOffId: UUID | null;
+};
+export type Quarantine = {
+  id: UUID;
+  warehouseId: UUID;
+  batchId: UUID;
+  version: Revision;
+  openedQuantity: Quantity;
+  remainingHeldQuantity: Quantity;
+  releasedQuantity: Quantity;
+  writtenOffQuantity: Quantity;
+  reason: string;
+  note: string | null;
+  createdAt: Timestamp;
+  createdByUserId: UUID;
+  status: "open" | "closed";
+  closedAt: Timestamp | null;
+  decisions: QuarantineDecision[];
+};
+export type QuarantineOrderUsage = {
+  orderId: UUID;
+  number: string;
+  createdAt: Timestamp;
+  source: "staff" | "waiter" | "customer" | "integration";
+  usedFromBatchQuantity: Quantity;
+  unit: Unit;
+};
+export type ComboComponent = { dishId: UUID; portions: 1 };
+export type ComboInput = { title: string; components: ComboComponent[] };
+export type Combo = ComboInput & {
+  id: UUID;
+  version: Revision;
+  status: "draft" | "published" | "archived";
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  recipeFingerprint: string;
+  needsReview: boolean;
+  pricingMode: "unpriced";
+};
+export type PublicCombo = {
+  id: UUID;
+  version: Revision;
+  title: string;
+  components: { dishId: UUID; dishName: string; portions: 1 }[];
+  status: "available" | "stopped";
+  maxUnits: number;
+  unavailableReason: string | null;
+  pricingMode: "unpriced";
+};
+export type ComboPlan = {
+  asOf: Timestamp;
+  stateRevision: Revision;
+  method: "joint_fefo_greedy_v1";
+  proposals: {
+    titleSuggestion: string;
+    components: ComboComponent[];
+    suggestedUnits: number;
+    explanation: string;
+    individualMaxUnits: number;
+  }[];
+  allocations: {
+    batchId: UUID;
+    ingredientId: UUID;
+    unit: Unit;
+    quantity: Quantity;
+    expiringQuantity: Quantity;
+  }[];
+  emptyReason: "no_risk_stock" | "no_feasible_pairs" | null;
+  isReservation: false;
+};
+export type OrderInput21 = {
+  lines: { dishId: UUID; portions: number }[];
+  combos?: { comboId: UUID; version: Revision; quantity: number }[];
+};
+export type ExternalOrderInput21 = OrderInput21 & { externalId: string };
+export type CompositionSnapshot =
+  | { kind: "dish"; dishId: UUID; dishName: string; portions: number }
+  | {
+      kind: "combo";
+      comboId: UUID;
+      version: Revision;
+      title: string;
+      quantity: number;
+      pricingMode: "unpriced";
+      components: { dishId: UUID; dishName: string; portions: 1 }[];
+    };
+export type StopForecast = {
+  asOf: Timestamp;
+  stateRevision: Revision;
+  method: "mean_demand_fefo_events_v1";
+  horizonEndsAt: Timestamp;
+  calculatedThrough: Timestamp;
+  history: {
+    from: Timestamp;
+    to: Timestamp;
+    exposureHours: number;
+    completedOrders: number;
+    observedFullDays: number;
+  };
+  datasetKind: "observed" | "demo_seeded";
+  assumptions: string[];
+  items: {
+    dishId: UUID;
+    dishName: string;
+    status:
+      | "already_stopped"
+      | "predicted"
+      | "not_reached_within_horizon"
+      | "insufficient_history"
+      | "calculation_limited";
+    estimatedWindow: { from: Timestamp; to: Timestamp } | null;
+    observedFrom: Timestamp;
+    exposureHours: number;
+    observedPortions: number;
+    portionsPerCalendarHour: number | null;
+    confidence: "insufficient" | "low" | "medium";
+    limitations: string[];
+    limitingIngredients: {
+      ingredientId: UUID;
+      ingredientName: string;
+      unit: Unit;
+      cause: "consumption" | "expiry" | "combined" | "current_shortage";
+    }[];
+  }[];
+};
+export type RiskReport = {
+  view: "period" | "cohort";
+  from: Timestamp;
+  to: Timestamp;
+  asOf: Timestamp;
+  cohortEntry: "dated" | "unknown" | null;
+  unknownEntryBatchCount: number;
+  trackingStartedAt: Timestamp;
+  policyVersion: "expiry-10pct-v1";
+  completeness: "complete" | "partial" | "unknown";
+  page: number;
+  pageSize: number;
+  total: number;
+  items: RiskReportRow[];
+  totalsByIngredient: {
+    ingredientId: UUID;
+    ingredientName: string;
+    unit: Unit;
+    usedExpiringQuantity: Quantity;
+    usedFreshQuantity: Quantity;
+    unknownRiskOrderQuantity: Quantity;
+    writtenOffExpiredQuantity: Quantity;
+    writtenOffDamagedQuantity: Quantity;
+    knownCohortEntryQuantity: Quantity;
+    unknownCohortCount: number;
+  }[];
+};
+export type RiskReportRow = {
+  batchId: UUID;
+  ingredientId: UUID;
+  ingredientName: string;
+  unit: Unit;
+  deliveryId: UUID;
+  deliveryNumber: string;
+  completeness: "complete" | "partial" | "unknown";
+  limitations: string[];
+  // period: [from,to); dated cohort: cohortAt..asOf;
+  // unknown cohort: only proved events from trackingStartedAt through asOf.
+  usedExpiringQuantity: Quantity;
+  usedFreshQuantity: Quantity;
+  unknownRiskOrderQuantity: Quantity;
+  writtenOffExpiredQuantity: Quantity;
+  writtenOffDamagedQuantity: Quantity;
+  remainingPhysicalAsOf: Quantity;
+  heldAsOf: Quantity;
+  expiredAsOf: Quantity;
+  // null in period view or when entry history is incomplete.
+  cohortAt: Timestamp | null;
+  riskAtEntry: Quantity | null;
+  usedInOrdersAfterEntry: Quantity | null;
+  writtenOffAfterEntry: Quantity | null;
+  usedFraction: number | null;
+};

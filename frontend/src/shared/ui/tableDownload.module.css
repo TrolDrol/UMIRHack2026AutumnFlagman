@@ -1,0 +1,66 @@
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border: 1px solid #b6c8bb;
+  border-radius: 10px;
+  color: #174936;
+  background: #fff;
+  cursor: pointer;
+}
+.trigger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.trigger:focus-visible,
+.menu button:focus-visible {
+  outline: 3px solid #8cb934;
+  outline-offset: 2px;
+}
+.menu {
+  font:
+    14px/1.45 Inter,
+    "Segoe UI",
+    sans-serif;
+  position: fixed;
+  z-index: 1000;
+  width: 240px;
+  max-width: calc(100vw - 16px);
+  padding: 8px;
+  border: 1px solid #b6c8bb;
+  border-radius: 12px;
+  background: #fff;
+  color: #173b30;
+  box-shadow: 0 8px 28px #102c2433;
+}
+.menu p {
+  margin: 4px 8px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.menu button {
+  display: block;
+  text-align: left;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.menu button:hover,
+.menu button:focus {
+  background: #edf4e7;
+}

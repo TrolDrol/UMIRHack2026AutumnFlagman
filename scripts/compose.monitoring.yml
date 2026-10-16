@@ -1,0 +1,35 @@
+# Merge with compose.live.yml; excludes the independent mock exporter entirely.
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.5
+    command: [--config.file=/etc/prometheus/live/prometheus.yml, --storage.tsdb.path=/prometheus, --storage.tsdb.retention.time=15d]
+    volumes:
+      - ${RIMS_MONITORING_BUNDLE:-../grafana/runtime/live-local}/prometheus:/etc/prometheus:ro
+      - prometheus-live:/prometheus
+    networks: [telemetry]
+    restart: unless-stopped
+  grafana:
+    image: grafana/grafana:12.4.2
+    environment:
+      GF_SERVER_ROOT_URL: ${RIMS_GRAFANA_URL:-http://localhost:3288/grafana/}
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      GF_SMTP_ENABLED: "false"
+      GF_SECURITY_ADMIN_USER: monitor-admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/admin_password
+      GF_SECURITY_SECRET_KEY__FILE: /run/secrets/secret_key
+    secrets: [admin_password, secret_key]
+    volumes:
+      - grafana-live:/var/lib/grafana
+      - ${RIMS_MONITORING_BUNDLE:-../grafana/runtime/live-local}/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ${RIMS_MONITORING_BUNDLE:-../grafana/runtime/live-local}/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks: [telemetry, application]
+    restart: unless-stopped
+volumes:
+  prometheus-live:
+  grafana-live:
+secrets:
+  admin_password: {file: ../grafana/secrets/admin_password}
+  secret_key: {file: ../grafana/secrets/secret_key}

@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-demo
+test-results
+playwright-report
+.npm-cache
+.env.local
+.env.production.local
+*.tsbuildinfo
+e2e
+src/test
+**/*.test.ts
+**/*.test.tsx
+README.md
+IMPLEMENTATION_CHECKLIST.md

@@ -1,0 +1,22 @@
+{
+  "name": "@rims/demo-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/browser.ts",
+    "./model": "./src/model.ts",
+    "./contracts": {
+      "types": "./src/shared/api/extensions.ts"
+    },
+    "./server-clock": "./src/server-clock.ts",
+    "./table-export": "./src/table-export.ts",
+    "./availability-stream": "./src/availability-stream.ts",
+    "./runtime": "./src/runtime.ts",
+    "./schemas": "./src/shared/lib/schemas.ts"
+  },
+  "dependencies": {
+    "msw": "2.11.3",
+    "zod": "4.1.11"
+  }
+}
